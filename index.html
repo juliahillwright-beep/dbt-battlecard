@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<!-- saved from url=(0254)file:///Users/jhillwright/Library/Application%20Support/Claude/local-agent-mode-sessions/da68a9b4-bf8c-4714-afdd-d7e83de70c73/7a0a09b9-bb71-404e-a498-68d2fafa80f8/local_e8dc716e-613f-469f-b69c-1806c50e1c1b/outputs/dbt-battlecard-core-claude-vs-cloud.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dbt Labs Battlecard: dbt Core + Claude vs. dbt Cloud/Enterprise</title>
+<style>
+  :root {
+    --bg-primary: #0a0d14;
+    --bg-elevated: #0f131c;
+    --bg-surface: #161b28;
+    --bg-hover: #1e2536;
+    --bg-card: #111827;
+    --text-primary: #f9fafb;
+    --text-secondary: rgba(249,250,251,0.72);
+    --text-muted: rgba(249,250,251,0.45);
+    --accent: #FF694A;
+    --accent-hover: #e05538;
+    --accent-light: rgba(255,105,74,0.15);
+    --win: #10b981;
+    --win-bg: rgba(16,185,129,0.12);
+    --lose: #ef4444;
+    --lose-bg: rgba(239,68,68,0.12);
+    --warn: #f59e0b;
+    --warn-bg: rgba(245,158,11,0.12);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59,130,246,0.12);
+    --purple: #8b5cf6;
+    --purple-bg: rgba(139,92,246,0.12);
+    --border: rgba(255,255,255,0.08);
+    --border-accent: rgba(255,105,74,0.3);
+    --radius: 10px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0f131c 0%, #161b28 100%);
+    border-bottom: 1px solid var(--border-accent);
+    padding: 20px 32px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-brand { display: flex; align-items: center; gap: 14px; }
+  .header-logo {
+    width: 38px; height: 38px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px; color: #fff; letter-spacing: -1px;
+  }
+  .header-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+  .header-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .header-meta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .meta-pill {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .meta-pill.hot { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  /* TABS */
+  .tabs-wrapper {
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted);
+    padding: 14px 18px;
+    font-size: 13px; font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text-secondary); border-bottom-color: var(--border); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* CONTENT */
+  .content { padding: 24px 32px; max-width: 1200px; margin: 0 auto; }
+  .tab-content { display: none; animation: fadeIn 0.25s ease; }
+  .tab-content.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* SECTION HEADER */
+  .section-header { margin-bottom: 20px; }
+  .section-title { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .section-desc { font-size: 13px; color: var(--text-secondary); max-width: 720px; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .card-title .icon { font-size: 16px; }
+
+  /* GRID LAYOUTS */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* COMPARISON TABLE */
+  .comparison-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .comparison-table thead th {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .comparison-table thead th.you { color: var(--win); }
+  .comparison-table thead th.them { color: var(--lose); }
+  .comparison-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  .comparison-table tbody tr:hover { background: var(--bg-hover); }
+  .comparison-table td { padding: 10px 14px; vertical-align: top; border: 1px solid var(--border); }
+  .comparison-table td:first-child { font-weight: 600; color: var(--text-secondary); font-size: 12px; width: 22%; }
+  .comparison-table td.win { color: var(--win); }
+  .comparison-table td.lose { color: var(--lose); background: var(--lose-bg); }
+  .comparison-table td.warn { color: var(--warn); }
+  .comparison-table td.neutral { color: var(--text-muted); font-style: italic; }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    border-radius: 4px; padding: 2px 8px;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .badge-win { background: var(--win-bg); color: var(--win); }
+  .badge-lose { background: var(--lose-bg); color: var(--lose); }
+  .badge-warn { background: var(--warn-bg); color: var(--warn); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple); }
+  .badge-accent { background: var(--accent-light); color: var(--accent); }
+
+  /* PAIN POINTS / PITFALLS */
+  .pitfall-item {
+    display: flex; gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .pitfall-item:last-child { border-bottom: none; }
+  .pitfall-num {
+    min-width: 28px; height: 28px;
+    background: var(--lose-bg);
+    border: 1px solid var(--lose);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--lose);
+    flex-shrink: 0;
+  }
+  .pitfall-body { flex: 1; }
+  .pitfall-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .pitfall-desc { font-size: 12px; color: var(--text-secondary); }
+  .pitfall-trap { font-size: 11px; color: var(--warn); margin-top: 5px; font-style: italic; }
+
+  /* WIN LIST */
+  .win-item {
+    display: flex; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .win-item:last-child { border-bottom: none; }
+  .win-dot {
+    min-width: 8px; height: 8px; border-radius: 50%;
+    background: var(--win); margin-top: 5px; flex-shrink: 0;
+  }
+  .win-body { flex: 1; }
+  .win-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+  .win-desc { font-size: 12px; color: var(--text-secondary); }
+  .win-proof { font-size: 11px; color: var(--accent); margin-top: 4px; }
+
+  /* QUOTE BLOCK */
+  .quote-block {
+    background: var(--bg-surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    margin: 12px 0;
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+  .quote-attr { font-style: normal; font-weight: 600; color: var(--text-muted); margin-top: 6px; font-size: 11px; }
+
+  /* TALK TRACK */
+  .talk-track {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .talk-track-header {
+    padding: 12px 16px;
+    background: var(--bg-hover);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    user-select: none;
+  }
+  .talk-track-header:hover { background: #252e42; }
+  .talk-track-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .talk-track-toggle { color: var(--text-muted); font-size: 12px; transition: transform 0.2s; }
+  .talk-track-body { padding: 16px; display: none; border-top: 1px solid var(--border); }
+  .talk-track.open .talk-track-toggle { transform: rotate(180deg); }
+  .talk-track.open .talk-track-body { display: block; }
+
+  /* LANDMINE */
+  .landmine {
+    background: var(--warn-bg);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .landmine-icon { font-size: 16px; flex-shrink: 0; }
+  .landmine-text { font-size: 12px; color: var(--warn); font-weight: 500; }
+  .landmine-why { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-style: italic; }
+
+  /* TREND CARD */
+  .trend-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    display: flex; gap: 16px;
+  }
+  .trend-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+  .trend-body { flex: 1; }
+  .trend-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .trend-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .trend-signal { font-size: 11px; color: var(--accent); font-weight: 600; }
+
+  /* COST TABLE */
+  .cost-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .cost-table th { background: var(--bg-surface); padding: 8px 12px; text-align: left; border: 1px solid var(--border); font-size: 11px; text-transform: uppercase; color: var(--text-muted); }
+  .cost-table td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  .cost-table tr:hover td { background: var(--bg-hover); }
+  .cost-high { color: var(--lose); font-weight: 700; }
+  .cost-low { color: var(--win); font-weight: 700; }
+
+  /* DISCOVERY QUESTIONS */
+  .disc-question {
+    background: var(--blue-bg);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 500;
+  }
+  .disc-why { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-style: italic; font-weight: 400; }
+
+  /* OBJECTION HANDLER */
+  .objection {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .objection-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--lose); margin-bottom: 4px; letter-spacing: 0.06em; }
+  .objection-text { font-size: 12px; color: var(--text-secondary); font-style: italic; margin-bottom: 10px; }
+  .response-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--win); margin-bottom: 4px; letter-spacing: 0.06em; }
+  .response-text { font-size: 12px; color: var(--text-primary); }
+
+  /* STATUS INDICATOR */
+  .status-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stat-pill {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    flex: 1; min-width: 100px;
+  }
+  .stat-num { font-size: 22px; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* ALERT */
+  .alert {
+    background: var(--accent-light);
+    border: 1px solid var(--border-accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .alert-icon { font-size: 16px; flex-shrink: 0; }
+  .alert-text { font-size: 12px; color: var(--text-secondary); }
+  .alert-title { font-weight: 700; color: var(--accent); margin-bottom: 4px; font-size: 13px; }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 40px;
+    padding: 16px 32px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-elevated);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .footer-text { font-size: 11px; color: var(--text-muted); }
+  .footer-badge { font-size: 11px; background: var(--accent-light); color: var(--accent); border-radius: 4px; padding: 2px 8px; font-weight: 600; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand">
+    <div class="header-logo">dbt</div>
+    <div>
+      <div class="header-title">Competitive Battlecard: dbt Core + Claude vs. dbt Cloud/Enterprise</div>
+      <div class="header-subtitle">For Account Executives — Internal Use Only</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="meta-pill hot">🔥 High-Friction Scenario</div>
+    <div class="meta-pill">Updated April 2026</div>
+    <div class="meta-pill">AI-Era Positioning</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrapper">
+  <button class="tab-btn active" onclick="switchTab(&#39;matrix&#39;)">📊 Matrix Overview</button>
+  <button class="tab-btn" onclick="switchTab(&#39;diy-traps&#39;)">⚠️ The DIY AI Traps</button>
+  <button class="tab-btn" onclick="switchTab(&#39;cloud-wins&#39;)">✅ Why Cloud Wins</button>
+  <button class="tab-btn" onclick="switchTab(&#39;market&#39;)">🔭 Market Trends</button>
+  <button class="tab-btn" onclick="switchTab(&#39;playbook&#39;)">🎯 Sales Playbook</button>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 1: MATRIX OVERVIEW
+═══════════════════════════════════════════════════ -->
+<div id="tab-matrix" class="tab-content active">
+
+  <div class="section-header">
+    <div class="section-title">Head-to-Head: dbt Core + Claude Code vs. dbt Cloud/Enterprise</div>
+    <div class="section-desc">This battlecard addresses the growing pattern of teams combining dbt Core (free, open source) with Claude Code as an AI coding assistant and believing this substitutes for dbt Cloud. It does not — and this is why.</div>
+  </div>
+
+  <div class="alert">
+    <div class="alert-icon">⚡</div>
+    <div>
+      <div class="alert-title">The Core Insight: Claude MCP Works Better WITH dbt Cloud</div>
+      <div class="alert-text">Teams don't realize that the dbt MCP server — the official integration between Claude and dbt — provides dramatically richer capabilities when connected to <strong>dbt Cloud</strong> (Discovery API, Semantic Layer, Job management) vs. dbt Core (CLI only). The "Claude + Core" stack ironically delivers a <em>degraded</em> Claude experience compared to Claude + dbt Cloud.</div>
+    </div>
+  </div>
+
+  <div class="status-row">
+    <div class="stat-pill">
+      <div class="stat-num">10x</div>
+      <div class="stat-label">Longer to reach robust production on Core vs Cloud — even with AI-assisted setup</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-num">30%+</div>
+      <div class="stat-label">Warehouse compute saved with Cloud's State-Aware Orchestration</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-num">$50-300K</div>
+      <div class="stat-label">Annual cost of DIY orchestration tooling on Core</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-num">32h/mo</div>
+      <div class="stat-label">Hours saved after migrating (WHOOP case study)</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-num">0.5-1 FTE</div>
+      <div class="stat-label">Ongoing CI/CD maintenance cost on Core</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⚡</span>Feature Comparison Matrix</div>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th class="them">dbt Core + Claude Code</th>
+          <th class="you">dbt Cloud / Enterprise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SQL/YAML Development</td>
+          <td class="warn">Claude writes SQL, but no awareness of upstream/downstream dependencies, company metric definitions, or data quality rules</td>
+          <td class="win">dbt Copilot &amp; Developer Agent generate SQL with full lineage context, semantic layer awareness, and ADLC best practices baked in</td>
+        </tr>
+        <tr>
+          <td>Context Persistence</td>
+          <td class="lose">Claude loses all context between sessions — every session requires re-education on your data model, business logic, and standards</td>
+          <td class="win">Persistent metadata, lineage graph, and Semantic Layer provide consistent context to all AI features across every session</td>
+        </tr>
+        <tr>
+          <td>Orchestration &amp; Scheduling</td>
+          <td class="lose">None native — requires Airflow, Dagster, Prefect, or Airflow at $50-300K/yr additional cost; Claude cannot manage job schedules</td>
+          <td class="win">Native job orchestration, State-Aware Orchestration (SAO), CI/CD, and retry logic — all managed, all included</td>
+        </tr>
+        <tr>
+          <td>Data Lineage</td>
+          <td class="lose">No column-level lineage, no cross-project lineage; Claude cannot see upstream/downstream impact of changes</td>
+          <td class="win">dbt Explorer with column-level lineage, multi-project lineage via dbt Mesh, impact analysis before merging</td>
+        </tr>
+        <tr>
+          <td>Governance (RBAC/SSO/SCIM)</td>
+          <td class="lose">Zero — no role-based access, no SSO, no audit logs; AI-generated code has no governance trail</td>
+          <td class="win">Full RBAC, SSO/SAML, SCIM, audit logging; SOC 2, HIPAA, ISO 27001 compliant on Enterprise</td>
+        </tr>
+        <tr>
+          <td>AI Auditability</td>
+          <td class="lose">No audit trail for AI-generated changes — security and compliance teams increasingly requiring this</td>
+          <td class="win">dbt Agents produce auditable actions tied to governed data context; every AI action is traceable</td>
+        </tr>
+        <tr>
+          <td>Semantic Layer / Metrics</td>
+          <td class="lose">Claude generates SQL that may not align with company-wide metric definitions — risk of inconsistent reporting</td>
+          <td class="win">dbt Semantic Layer centralizes all business logic; AI queries are guaranteed to use canonical metric definitions</td>
+        </tr>
+        <tr>
+          <td>Multi-Project / Team Scale</td>
+          <td class="lose">Monolithic projects become unmanageable at scale; Claude has no concept of cross-project dependencies</td>
+          <td class="win">dbt Mesh enables federated, multi-team project ownership with cross-project lineage and dependency management</td>
+        </tr>
+        <tr>
+          <td>IDE / Developer Experience</td>
+          <td class="warn">Terminal-based Claude Code — requires CLI fluency; not accessible to junior analysts or business users</td>
+          <td class="win">Browser-based Studio IDE, Canvas, auto-complete, inline dbt Copilot — accessible to all skill levels</td>
+        </tr>
+        <tr>
+          <td>CI/CD Pipeline</td>
+          <td class="lose">Must be custom-built and maintained; Claude can help write the code but cannot run or manage pipelines</td>
+          <td class="win">Built-in CI with Slim CI (run only modified models), Continuous Deployment, automated testing on PR</td>
+        </tr>
+        <tr>
+          <td>Performance / Parse Speed</td>
+          <td class="warn">Standard dbt Core parse speeds; no Fusion engine optimization</td>
+          <td class="win">dbt Fusion engine: 30% faster parse times than dbt Core on M1 Mac — and improving continuously</td>
+        </tr>
+        <tr>
+          <td>Infrastructure Management</td>
+          <td class="lose">Full self-management burden — version upgrades take 2-4 weeks of senior engineer time annually</td>
+          <td class="win">Fully managed, automatic version upgrades, 99.95% SLA, elastic scaling</td>
+        </tr>
+        <tr>
+          <td>Claude MCP Integration Quality</td>
+          <td class="lose">CLI-only MCP: basic command execution only (dbt run, compile, test)</td>
+          <td class="win">Rich MCP: Discovery API, Semantic Layer queries, Job management, project metadata — Claude understands your entire data platform</td>
+        </tr>
+        <tr>
+          <td>AI Rate Limiting Risk</td>
+          <td class="lose">Full exposure — teams building production pipelines on Claude's consumer rate limits face reliability risk</td>
+          <td class="win">dbt Copilot/Agents are managed, SLA-backed AI features — not exposed to third-party rate limit fluctuations</td>
+        </tr>
+        <tr>
+          <td>Data Observability / Alerting</td>
+          <td class="lose">No native alerting — must wire up external tools; Claude cannot monitor production jobs</td>
+          <td class="win">Built-in logging, alerting, retry logic; Observability Agent (coming soon) for AI-driven pipeline monitoring</td>
+        </tr>
+        <tr>
+          <td>Cost to Reach Production</td>
+          <td class="lose">80–200 hours even with Claude Code assistance for a robust production setup (vs. ~10h on Cloud); plus orchestration tooling + 0.5–1 FTE ongoing maintenance that AI doesn't eliminate</td>
+          <td class="win">~10 hours average time to production; all tooling included; no infrastructure maintenance</td>
+        </tr>
+        <tr>
+          <td>Pricing</td>
+          <td class="warn">dbt Core is free; Claude Max ~$100/mo per developer — but hidden costs often reach $300K+/yr total</td>
+          <td class="win">Starter ~$100-150/seat/mo; Enterprise custom; TCO typically lower than DIY when all costs factored</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="icon">🟢</span> When dbt Cloud Wins</div>
+      <div style="font-size:12px; color: var(--text-secondary);">
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">✅ Team has 500+ models and is hitting scale limits</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">✅ Multiple teams or projects need to collaborate</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">✅ Security/compliance team is asking about AI auditability</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">✅ Less-technical analysts need to work with data</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">✅ Team is spending &gt; 20% of time on infrastructure</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">✅ Original dbt Core architect has left the company</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">✅ AI initiatives require consistent metric definitions</div>
+        <div style="padding:8px 0;">✅ Leadership is asking about data reliability and uptime SLAs</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🔴</span> When Prospect Might Resist</div>
+      <div style="font-size:12px; color: var(--text-secondary);">
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">⚠️ Small team (&lt;5 engineers), early stage, &lt;100 models</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">⚠️ Strong open-source culture / "we never pay for tools"</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">⚠️ One hero engineer who built everything and defends it</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">⚠️ Very tight budget cycle — no room for new SaaS</div>
+        <div style="padding:8px 0; border-bottom:1px solid var(--border);">⚠️ Strict data residency requirements (air-gapped)</div>
+        <div style="padding:8px 0;">⚠️ Already invested heavily in Astronomer/Dagster stack</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 2: DIY AI TRAPS
+═══════════════════════════════════════════════════ -->
+<div id="tab-diy-traps" class="tab-content">
+
+  <div class="section-header">
+    <div class="section-title">The DIY AI Trap: 12 Pitfalls of dbt Core + Claude Code</div>
+    <div class="section-desc">These are the hidden costs, failure modes, and false assumptions teams make when believing Claude Code replaces the need for dbt Cloud. Use these to surface pain the prospect may not yet feel — or hasn't admitted.</div>
+  </div>
+
+  <div class="alert">
+    <div class="alert-icon">🎯</div>
+    <div>
+      <div class="alert-title">Framing for the Conversation</div>
+      <div class="alert-text">Don't attack Claude — position dbt Cloud as what makes Claude <em>dramatically more powerful</em>. The conversation is: "You're using Claude with a fraction of its possible dbt context. Here's what you're missing."</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⚠️</span> The 12 Traps (Underdocumented in Internal Materials)</div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">1</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Context Amnesia Trap</div>
+        <div class="pitfall-desc">Claude loses all memory between sessions. Every time a developer opens a new Claude Code session, the AI has zero knowledge of your data model, business rules, naming conventions, or prior decisions. Teams end up writing increasingly elaborate "context dumps" in every prompt just to get useful output — negating much of the productivity gain.</div>
+        <div class="pitfall-trap">🪤 Trap: Teams underestimate how much time goes into prompt engineering and context re-injection. One senior engineer's tribal knowledge is now required just to make Claude functional — the opposite of democratization.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">2</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Rate Limit Reliability Crisis</div>
+        <div class="pitfall-desc">Claude's consumer rate limits have been tightening significantly in 2026, with documented performance declines and "stealth price hike" complaints from the developer community. Teams who have built production development workflows on Claude Max/Pro are exposed to sudden productivity disruptions with no SLA protection. Anthropic's enterprise rate limits require separate negotiation and pricing.</div>
+        <div class="pitfall-trap">🪤 Trap: When the sprint is on fire and Claude hits its rate limit, there's no fallback. Data engineering sprints blocked by third-party AI quota issues — a new category of risk.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">3</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Governance Blind Spot</div>
+        <div class="pitfall-desc">AI-generated SQL merged into production dbt Core has no audit trail — no record of what the AI suggested, what the human approved, or why a model was changed. Security and compliance teams at regulated companies (financial services, healthcare, retail with PII) are beginning to mandate AI auditability. A data breach or audit finding traced to untracked AI-generated code is a career-ending event for a data leader.</div>
+        <div class="pitfall-trap">🪤 Trap: The infosec/compliance team hasn't asked yet — but they will. Position this as future-proofing before the conversation becomes reactive.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">4</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Semantic Inconsistency Bomb</div>
+        <div class="pitfall-desc">Without access to a governed Semantic Layer, Claude generates SQL based on whatever context it's given in the prompt. Two developers asking Claude to "calculate monthly revenue" in two different sessions may get two different SQL implementations — different filters, different date handling, different join logic. These inconsistencies surface when dashboards contradict each other, eroding data trust across the organization.</div>
+        <div class="pitfall-trap">🪤 Trap: This is the "data trust crisis" that typically triggers escalation to leadership. When the CEO asks why the BI tool shows $12M and the data team's Claude-generated query shows $11.7M, heads roll.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">5</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Degraded MCP Trap (The Killer Insight)</div>
+        <div class="pitfall-desc">The official dbt MCP server integration — which allows Claude to interact with dbt directly — provides fundamentally different capabilities depending on whether it's connected to dbt Core or dbt Cloud. With dbt Core: Claude gets CLI access only (run, compile, test). With dbt Cloud: Claude gets the Discovery API (full metadata), Semantic Layer (metric definitions), and Job management. Teams using Core + Claude are unwittingly using Claude at maybe 20% of its dbt-specific capability.</div>
+        <div class="pitfall-trap">🪤 Trap: This is often the "aha" moment in deal cycles. Show the prospect the actual MCP server documentation and let them read what they're missing.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">6</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Lineage Blindness Problem</div>
+        <div class="pitfall-desc">Claude Code has no awareness of your data lineage graph. When a developer asks Claude to modify a staging model, Claude cannot warn them that 14 downstream models and 3 BI dashboards depend on it. In production, this manifests as unexpected breakages that take hours to diagnose. dbt Core's native lineage tools stop at the model boundary — no column-level, no cross-project, no BI tool awareness.</div>
+        <div class="pitfall-trap">🪤 Trap: Every experienced data engineer has a horror story about a cascade failure from an "innocent" model change. Ask them about it — then connect it to what Claude can't see.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">7</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Verification Paradox</div>
+        <div class="pitfall-desc">dbt compile succeeds ≠ the model produces correct output. Claude can write syntactically valid SQL that returns the wrong answer — wrong date filters, incorrect aggregation logic, missing deduplication. Catching these errors requires human review by someone who deeply understands the business logic. The more Claude is used, the more review burden falls on senior engineers — potentially creating a net productivity loss for experienced team members who become reviewers rather than builders.</div>
+        <div class="pitfall-trap">🪤 Trap: Junior developers are the ones most likely to accept Claude output without scrutiny. The people most qualified to catch errors are the least likely to be doing the reviewing.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">8</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Hidden Cost Iceberg (Even in the Vibe Coding Era)</div>
+        <div class="pitfall-desc">Teams see "dbt Core = free, Claude = $100/mo" and think they're saving money vs. dbt Cloud. Even in the vibe coding era, Claude meaningfully accelerates initial setup — but a robust production Core environment (multiple envs, CI/CD, orchestration, monitoring, alerting) still realistically takes 80–200 hours of engineering time, vs. ~10 hours on dbt Cloud. More importantly, Claude doesn't touch the costs that follow: $50-300K/yr for orchestration tooling, 0.5-1 FTE ongoing CI/CD maintenance, 2-4 weeks of senior engineer time annually for version upgrades, and 30%+ warehouse compute waste from no state-aware orchestration.</div>
+        <div class="pitfall-trap">🪤 Trap: Build the TCO calculation in the meeting. Most engineering leaders have never done this math, and the number shocks them.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">9</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Knowledge Concentration Risk</div>
+        <div class="pitfall-desc">A dbt Core + Claude setup typically requires one or two senior engineers who: (a) know how to prompt Claude effectively for data engineering tasks, (b) understand the full project architecture to provide Claude with correct context, and (c) can verify Claude's output. When that person leaves — a leading trigger for Core-to-Cloud migration — the team loses both the institutional knowledge AND the AI effectiveness simultaneously. Claude without context is nearly useless for complex dbt work.</div>
+        <div class="pitfall-trap">🪤 Trap: Ask "what happens if [the Claude power user] gets hit by a bus?" The answer reveals the fragility of the DIY stack.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">10</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Democratization Failure</div>
+        <div class="pitfall-desc">One of the most compelling AI promises is democratizing data access — enabling analysts and business users, not just engineers, to build with data. Claude Code (terminal-based, requires CLI fluency and git workflows) is inaccessible to everyone except senior engineers. dbt Core already excluded business analysts; Claude Code + dbt Core doubles down on this exclusivity. The promise of "AI will make everyone a data engineer" never materializes on this stack.</div>
+        <div class="pitfall-trap">🪤 Trap: Ask about the analyst-to-engineer ratio on the team. A 5:1 ratio with a CLI-only toolchain means 80% of potential data builders can't participate.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">11</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Multi-Agent Architecture Mismatch</div>
+        <div class="pitfall-desc">The industry is rapidly moving toward multi-agent AI systems — specialized agents for different tasks (development, analysis, observability, discovery) coordinated by an orchestration layer. A single Claude Code instance is a monolithic, single-agent approach that doesn't scale architecturally. dbt Cloud's native Agents (Developer, Analyst, Discovery, Observability) are purpose-built for this multi-agent future, each with domain-specific context and guardrails.</div>
+        <div class="pitfall-trap">🪤 Trap: Teams building AI-first data platforms on a single-agent model will need to re-architect in 12-18 months as task complexity grows. Build the right foundation now.</div>
+      </div>
+    </div>
+
+    <div class="pitfall-item">
+      <div class="pitfall-num">12</div>
+      <div class="pitfall-body">
+        <div class="pitfall-title">The Snowflake dbt Projects False Equivalence</div>
+        <div class="pitfall-desc">Some teams conflate "dbt Core + Claude" with the newer Snowflake dbt Projects offering. Snowflake's dbt Projects is built on dbt Core (not Fusion), is Snowflake-only, and lacks all enterprise capabilities of dbt Platform. For multi-cloud, multi-warehouse, or platform-agnostic teams, this path locks them into Snowflake's incentive structure — which is fundamentally misaligned with cost management (Snowflake makes money when you run more compute).</div>
+        <div class="pitfall-trap">🪤 Trap: Teams at Snowflake-heavy shops see this as a "free" alternative. Expose the lock-in and misaligned incentives clearly.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">💰</span>True Cost of Ownership: dbt Core + Claude vs. dbt Cloud</div>
+    <table class="cost-table">
+      <thead>
+        <tr>
+          <th>Cost Category</th>
+          <th>dbt Core + Claude Code</th>
+          <th>dbt Cloud Enterprise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Platform license</td>
+          <td>$0 (Core) + ~$1,200/yr (Claude Max × 10 devs)</td>
+          <td>~$18,000–$30,000/yr (10 dev seats)</td>
+        </tr>
+        <tr>
+          <td>Orchestration tooling</td>
+          <td class="cost-high">$50,000–$300,000/yr (Airflow/Dagster/Prefect)</td>
+          <td class="cost-low">$0 — included</td>
+        </tr>
+        <tr>
+          <td>CI/CD maintenance</td>
+          <td class="cost-high">0.5–1 FTE ongoing (~$75,000–$150,000/yr)</td>
+          <td class="cost-low">$0 — included</td>
+        </tr>
+        <tr>
+          <td>Setup time</td>
+          <td class="cost-high">80–200 hours to robust production (even with Claude Code); ~20–50h for a basic setup</td>
+          <td class="cost-low">~10 hours average to production</td>
+        </tr>
+        <tr>
+          <td>Annual version upgrades</td>
+          <td class="cost-high">2–4 weeks senior engineer time</td>
+          <td class="cost-low">$0 — fully managed</td>
+        </tr>
+        <tr>
+          <td>Warehouse compute waste</td>
+          <td class="cost-high">30%+ over-spend (full DAG runs, no SAO)</td>
+          <td class="cost-low">30%+ savings via State-Aware Orchestration</td>
+        </tr>
+        <tr>
+          <td>Incident response / fires</td>
+          <td class="cost-high">Unplanned; no SLA; reactive</td>
+          <td class="cost-low">99.95% uptime SLA; built-in alerting</td>
+        </tr>
+        <tr>
+          <td>Estimated 3-year TCO (20-person team)</td>
+          <td class="cost-high">$800,000 – $1,500,000+</td>
+          <td class="cost-low">$200,000 – $400,000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 3: CLOUD WINS
+═══════════════════════════════════════════════════ -->
+<div id="tab-cloud-wins" class="tab-content">
+
+  <div class="section-header">
+    <div class="section-title">Why dbt Cloud Wins: The AI-Native Data Platform</div>
+    <div class="section-desc">dbt Cloud is not just "managed dbt Core." It's a purpose-built AI-native analytics platform where every AI feature is grounded in governed, contextualized data — something Claude Code alone can never achieve.</div>
+  </div>
+
+  <div class="grid-2">
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🤖</span> dbt Native AI (What Claude Code Can't Replicate)</div>
+      <div class="win-item">
+        <div class="win-dot"></div>
+        <div class="win-body">
+          <div class="win-title">dbt Copilot — Context-Aware AI Generation</div>
+          <div class="win-desc">Generates SQL, documentation, tests, and semantic models with full awareness of your project's lineage, upstream/downstream dependencies, and company metric definitions. Available inline in Studio IDE and Canvas.</div>
+        </div>
+      </div>
+      <div class="win-item">
+        <div class="win-dot"></div>
+        <div class="win-body">
+          <div class="win-title">Developer Agent (Enterprise, Beta)</div>
+          <div class="win-desc">Writes and refactors models from natural language in the Studio IDE, validates changes against dbt Fusion engine, and runs queries against your warehouse — all with full project context, not just the current file.</div>
+        </div>
+      </div>
+      <div class="win-item">
+        <div class="win-dot"></div>
+        <div class="win-body">
+          <div class="win-title">Analyst Agent (Enterprise, Beta)</div>
+          <div class="win-desc">Analyzes data through natural language questions, powered by the Semantic Layer with transparent SQL and lineage — every answer is traceable to governed metric definitions.</div>
+        </div>
+      </div>
+      <div class="win-item">
+        <div class="win-dot"></div>
+        <div class="win-body">
+          <div class="win-title">Discovery Agent (Private Beta)</div>
+          <div class="win-desc">Surfaces datasets, definitions, tests, and lineage in the Catalog — enabling natural language data discovery across your entire platform.</div>
+        </div>
+      </div>
+      <div class="win-item">
+        <div class="win-dot"></div>
+        <div class="win-body">
+          <div class="win-title">Observability Agent (Coming Soon)</div>
+          <div class="win-desc">AI-driven pipeline monitoring and troubleshooting — proactive identification of issues before they reach downstream consumers.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔗</span> How dbt Cloud Supercharges Claude (the MCP Advantage)</div>
+      <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">The official dbt MCP server unlocks Claude's full potential — but only with dbt Cloud.</div>
+      <div style="background: var(--lose-bg); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+        <div style="font-size:11px; font-weight:700; color:var(--lose); margin-bottom:6px; text-transform:uppercase;">Claude + dbt Core MCP</div>
+        <div style="font-size:12px; color:var(--text-secondary);">CLI access only: <code style="background:var(--bg-surface);padding:1px 5px;border-radius:3px;">dbt run</code>, <code style="background:var(--bg-surface);padding:1px 5px;border-radius:3px;">compile</code>, <code style="background:var(--bg-surface);padding:1px 5px;border-radius:3px;">test</code> — no metadata, no lineage, no semantics</div>
+      </div>
+      <div style="background: var(--win-bg); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 12px;">
+        <div style="font-size:11px; font-weight:700; color:var(--win); margin-bottom:6px; text-transform:uppercase;">Claude + dbt Cloud MCP</div>
+        <div style="font-size:12px; color:var(--text-secondary);">
+          ✅ Discovery API — Claude reads your full metadata catalog<br>
+          ✅ Semantic Layer — Claude uses canonical metric definitions<br>
+          ✅ Job Management — Claude can trigger, monitor, and inspect runs<br>
+          ✅ Project Metadata — Claude understands your full DAG and dependencies<br>
+          ✅ Column-Level Lineage — Claude knows exactly what each column traces to
+        </div>
+      </div>
+      <div class="quote-block" style="margin-top:12px;">
+        "Ask Claude a data-related question and see dbt MCP in action" — the full capability is only unlocked with dbt Cloud connectivity.
+        <div class="quote-attr">— dbt Labs documentation, docs.getdbt.com</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🏗️</span> Platform Differentiators: What Only dbt Cloud Delivers</div>
+    <div class="grid-3">
+      <div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Governance &amp; Security</div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">SSO/SAML + SCIM</div><div class="win-desc">Enterprise identity federation — one-click onboarding/offboarding</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">RBAC</div><div class="win-desc">Granular role-based access to projects, environments, and features</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">Audit Logging</div><div class="win-desc">Full trace of every action — including AI-generated changes</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">PrivateLink / IP Restrictions</div><div class="win-desc">Enterprise+ network isolation and data residency controls</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">SOC 2 / HIPAA / ISO 27001</div><div class="win-desc">Compliance certifications for regulated industries</div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Collaboration &amp; Scale</div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">dbt Mesh</div><div class="win-desc">Multi-team, multi-project architecture with cross-project lineage and dependency management</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">dbt Explorer</div><div class="win-desc">Column-level lineage, model performance analysis, catalog browsing — the "Google Maps" of your data</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">Browser IDE</div><div class="win-desc">Zero-setup development for all skill levels — no CLI required</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">Semantic Layer</div><div class="win-desc">Single source of truth for all business metrics — powers consistent AI outputs</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">Defer to Production</div><div class="win-desc">Run only modified models in dev — massive warehouse cost savings</div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Operations &amp; Reliability</div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">State-Aware Orchestration</div><div class="win-desc">Run only changed models in production — 30%+ warehouse compute savings</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">Native CI/CD</div><div class="win-desc">Slim CI, automated testing on PR, continuous deployment — no custom pipelines</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">99.95% SLA</div><div class="win-desc">Guaranteed uptime with Anthropic-managed infrastructure</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">dbt Fusion Engine</div><div class="win-desc">30% faster parsing than Core; continuously optimized; closed-source performance advantage</div></div>
+        </div>
+        <div class="win-item">
+          <div class="win-dot"></div>
+          <div class="win-body"><div class="win-title">Managed Upgrades</div><div class="win-desc">No more 2-4 week version upgrade sprints; always on the latest dbt</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">💬</span> Customer Proof Points</div>
+    <div class="quote-block">
+      "We've built out our own version of dbt Cloud. It's caused innumerable headaches. Infrastructure problems, CPU, memory problems... We could certainly continue, and roll our own. But this is not the business Vacasa wants to be in... We're ready to just have a stable execution."
+      <div class="quote-attr">— Matt, Director of Analytics Engineering, Vacasa</div>
+    </div>
+    <div class="quote-block">
+      "We got back 40 hours a week... Now the team can provide higher quality dashboards, with way less effort—our dashboard uptime is now at 95%, whereas before the move to dbt Cloud, it hovered at 80%."
+      <div class="quote-attr">— Code42 customer</div>
+    </div>
+    <div class="quote-block">
+      "Our monolithic dbt Core project had grown to a size that was no longer sustainable... which gradually slowed the pace of our development. Second, analytics teams struggled with the local development workflows required for dbt Core."
+      <div class="quote-attr">— Cityblock Health</div>
+    </div>
+    <div class="quote-block">
+      "Too many issues configuring peoples laptops... High cost in maintaining AWS infrastructure to run production dbt Core jobs... Complex CI/CD pipelines."
+      <div class="quote-attr">— Milos, Flybuys</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 4: MARKET TRENDS
+═══════════════════════════════════════════════════ -->
+<div id="tab-market" class="tab-content">
+
+  <div class="section-header">
+    <div class="section-title">Where the Market Is Heading: AI + Analytics in 2026 and Beyond</div>
+    <div class="section-desc">Use these trends to position dbt Cloud as the forward-looking choice — and dbt Core + Claude Code as a transitional, tactical solution that will require re-architecture as AI maturity grows.</div>
+  </div>
+
+  <div class="trend-card">
+    <div class="trend-icon">🤖</div>
+    <div class="trend-body">
+      <div class="trend-title">Multi-Agent Systems Are Replacing Single Agents</div>
+      <div class="trend-desc">Gartner reports a 1,445% surge in multi-agent system inquiries from Q1 2024 to Q2 2025. The industry is rapidly moving from "one Claude instance" to orchestrated teams of specialized agents — each with domain expertise and guardrails. dbt Cloud's native multi-agent architecture (Developer, Analyst, Discovery, Observability) is purpose-built for this future. dbt Core + Claude Code is a single-agent architecture that doesn't scale.</div>
+      <div class="trend-signal">📈 Sales Signal: Ask "How are you thinking about AI agent orchestration for your data team in 2027?" — most haven't thought past today's Claude subscription.</div>
+    </div>
+  </div>
+
+  <div class="trend-card">
+    <div class="trend-icon">🏛️</div>
+    <div class="trend-body">
+      <div class="trend-title">Governance + AI Auditability Becoming Non-Negotiable</div>
+      <div class="trend-desc">40% of Global 2000 enterprises are expected to establish AI-collaborative work environments by 2026 — which means AI governance frameworks, audit trails, and explainability requirements follow. GDPR, CCPA, SOX, and emerging EU AI Act requirements are beginning to touch data pipeline AI. The "move fast with Claude, figure out governance later" approach is a compliance time bomb for regulated industries.</div>
+      <div class="trend-signal">📈 Sales Signal: "Has your compliance or infosec team asked about AI auditability in your data pipelines yet?" If not, plant the seed — it's coming.</div>
+    </div>
+  </div>
+
+  <div class="trend-card">
+    <div class="trend-icon">🎯</div>
+    <div class="trend-body">
+      <div class="trend-title">Context Quality — Not Quantity — Is the AI Limiting Factor</div>
+      <div class="trend-desc">Research shows most teams don't approach the context limits of modern LLMs — the real bottleneck is the quality and relevance of the context provided to the model. dbt Cloud's governed metadata, lineage, and Semantic Layer are the highest-quality data context available for analytics AI. Teams running Claude with ad-hoc prompts are working with low-quality context; dbt Cloud provides structured, validated, continuously-updated context at enterprise scale.</div>
+      <div class="trend-signal">📈 Sales Signal: "When you use Claude for dbt work, how much time does your team spend writing context into each prompt?" Surface the hidden prompt engineering tax.</div>
+    </div>
+  </div>
+
+  <div class="trend-card">
+    <div class="trend-icon">🌐</div>
+    <div class="trend-body">
+      <div class="trend-title">Natural Language Analytics: Democratization Demand Is Real</div>
+      <div class="trend-desc">Conversational analytics platforms are enabling non-technical users to query complex databases in plain English — and demand is exploding. 80% of enterprise apps are expected to embed AI copilots by 2026 (IDC). But this democratization only works when AI is grounded in governed semantic definitions. dbt's Semantic Layer + Analyst Agent is the foundation for safe, accurate natural language analytics at scale. Without it, you get inconsistent answers that destroy trust.</div>
+      <div class="trend-signal">📈 Sales Signal: "What's your plan for enabling business analysts and non-engineers to get answers from data with AI? What happens when they get different answers?"</div>
+    </div>
+  </div>
+
+  <div class="trend-card">
+    <div class="trend-icon">⚡</div>
+    <div class="trend-body">
+      <div class="trend-title">Platform Consolidation: The Modern Data Stack Is Contracting</div>
+      <div class="trend-desc">The era of assembling 15 best-of-breed tools is ending. Enterprise buyers are consolidating toward integrated platforms that reduce tool sprawl, vendor management, and integration complexity. Gartner predicts significant consolidation in the data engineering platform space through 2027. dbt Cloud as an end-to-end analytics engineering platform — vs. the DIY stack of Core + Claude + Airflow + a data catalog + a CI/CD tool + monitoring — aligns perfectly with this consolidation trend.</div>
+      <div class="trend-signal">📈 Sales Signal: "How many vendors does your data team currently manage? What's the annual overhead of integrating and maintaining all those tools?"</div>
+    </div>
+  </div>
+
+  <div class="trend-card">
+    <div class="trend-icon">🔒</div>
+    <div class="trend-body">
+      <div class="trend-title">Open Source + AI = Security Surface Area Concern</div>
+      <div class="trend-desc">Security teams are increasingly scrutinizing AI-generated code in production data pipelines. Open source tools with AI-generated contributions create new vectors: dependency injection, prompt injection through malformed data, and unreviewed AI-generated SQL touching sensitive tables. Enterprise data platforms with managed AI (like dbt Cloud's Agents) provide isolation, access controls, and audit trails that raw Claude Code cannot. This is an emerging concern that will become a procurement blocker.</div>
+      <div class="trend-signal">📈 Sales Signal: "Has your security team reviewed your current AI-assisted development workflow? What's their policy on AI-generated code in production?"</div>
+    </div>
+  </div>
+
+  <div class="trend-card">
+    <div class="trend-icon">📊</div>
+    <div class="trend-body">
+      <div class="trend-title">The "AI-Ready Data" Premium: Semantic Layer as Competitive Moat</div>
+      <div class="trend-desc">As AI agents become the primary consumers of data (not humans), the companies with well-governed, well-documented, semantically-rich data assets will have a structural advantage. dbt's Semantic Layer is a core component of AI-ready data infrastructure. Teams that invest in it now are building a compound moat — every metric definition, every lineage edge, every data quality test makes their AI outputs more reliable than competitors'. Teams on dbt Core + Claude are not building this asset.</div>
+      <div class="trend-signal">📈 Sales Signal: "What's your strategy for ensuring AI agents — yours and your customers' — can reliably query your data? How do you ensure consistency?"</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 5: SALES PLAYBOOK
+═══════════════════════════════════════════════════ -->
+<div id="tab-playbook" class="tab-content">
+
+  <div class="section-header">
+    <div class="section-title">Sales Playbook: Discovery, Talk Tracks, Objections &amp; Landmines</div>
+    <div class="section-desc">Tactical guidance for navigating the dbt Core + Claude Code objection. Remember: don't attack Claude — position dbt Cloud as what makes Claude better.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🔍</span> Discovery Questions</div>
+    <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted); font-style: italic;">Ask these to surface pain before pitching. Listen for the triggers.</div>
+
+    <div class="disc-question">
+      "When your team uses Claude for dbt work, how much time does someone spend writing context into each prompt — explaining your data model, naming conventions, business rules?"
+      <div class="disc-why">→ Surfaces the context amnesia tax. Any number &gt; 10 min/session is a big deal at scale.</div>
+    </div>
+    <div class="disc-question">
+      "What happens when the person who set up your dbt Core project leaves? How long would it take a new engineer to be productive?"
+      <div class="disc-why">→ Surfaces knowledge concentration risk. Usually lands hard with engineering leaders.</div>
+    </div>
+    <div class="disc-question">
+      "Has your security or compliance team ever asked about your AI-assisted development workflow? What's their policy on AI-generated code in production data pipelines?"
+      <div class="disc-why">→ Plants a governance seed if it hasn't been raised. Useful for regulated industries.</div>
+    </div>
+    <div class="disc-question">
+      "If two different analysts asked Claude to calculate monthly revenue today, would they get the same answer? How would you know if they didn't?"
+      <div class="disc-why">→ Surfaces the semantic inconsistency bomb. This is often a "oh wow, I hadn't thought about that" moment.</div>
+    </div>
+    <div class="disc-question">
+      "Have you ever hit Claude's rate limits during a critical sprint? What happened?"
+      <div class="disc-why">→ Surfaces reliability risk. If they haven't hit it yet, they will.</div>
+    </div>
+    <div class="disc-question">
+      "Are you aware that the dbt MCP server — the official integration between Claude and dbt — provides access to the Discovery API, Semantic Layer, and Job management only when connected to dbt Cloud? What does your current Claude integration see?"
+      <div class="disc-why">→ The "aha" moment. Pull up the docs.getdbt.com MCP page in the meeting for maximum impact.</div>
+    </div>
+    <div class="disc-question">
+      "What's your total annual spend on orchestration tools, CI/CD maintenance, and data infrastructure for your dbt Core setup? Have you ever done the full TCO calculation?"
+      <div class="disc-why">→ Opens the cost conversation. Most teams have never added it up.</div>
+    </div>
+    <div class="disc-question">
+      "How many non-engineers on your team can independently build a new dbt model today, end to end?"
+      <div class="disc-why">→ Surfaces the democratization failure. For most Core shops, the answer is "zero."</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">💣</span> Landmine Questions (Plant, Don't Detonate)</div>
+    <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted); font-style: italic;">These are questions that expose structural weaknesses. Ask them in discovery, then let the prospect sit with the answer.</div>
+
+    <div class="landmine">
+      <div class="landmine-icon">💣</div>
+      <div>
+        <div class="landmine-text">"How do you ensure the SQL Claude generates for a new model won't break 10 models downstream?"</div>
+        <div class="landmine-why">Claude has no lineage awareness. There is no safety net. Most teams rely on "we review it manually" — which doesn't scale.</div>
+      </div>
+    </div>
+    <div class="landmine">
+      <div class="landmine-icon">💣</div>
+      <div>
+        <div class="landmine-text">"When Claude changes a staging model, how do you know if it will affect your finance team's dashboard in Tableau?"</div>
+        <div class="landmine-why">Cross-tool lineage (dbt model → BI dashboard) doesn't exist in Core. This is the gap that causes trust incidents.</div>
+      </div>
+    </div>
+    <div class="landmine">
+      <div class="landmine-icon">💣</div>
+      <div>
+        <div class="landmine-text">"If your Claude subscription got suspended tomorrow, what would your team's data development velocity look like?"</div>
+        <div class="landmine-why">Surfaces single-point-of-failure risk. The answer reveals how dependent they've become on a consumer AI tool.</div>
+      </div>
+    </div>
+    <div class="landmine">
+      <div class="landmine-icon">💣</div>
+      <div>
+        <div class="landmine-text">"Who on your team is responsible for verifying the correctness of Claude's SQL output before it goes to production?"</div>
+        <div class="landmine-why">Often reveals that junior developers are merging Claude output without deep review, or that one senior engineer is a verification bottleneck.</div>
+      </div>
+    </div>
+    <div class="landmine">
+      <div class="landmine-icon">💣</div>
+      <div>
+        <div class="landmine-text">"How would your security team feel if they knew AI-generated SQL was running in your production data warehouse with no audit log?"</div>
+        <div class="landmine-why">For regulated industries, this is a compliance violation waiting to happen. For others, it's a board-level risk question.</div>
+      </div>
+    </div>
+    <div class="landmine">
+      <div class="landmine-icon">💣</div>
+      <div>
+        <div class="landmine-text">"How many hours per week does your senior engineer spend re-explaining your data model to Claude at the start of each session?"</div>
+        <div class="landmine-why">Makes the context amnesia tax visible. "A few minutes each time" × 5 sessions/day × 5 engineers = hundreds of hours/year.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🗣️</span> Talk Tracks</div>
+
+    <div class="talk-track">
+      <div class="talk-track-header" onclick="toggleTrack(this)">
+        <div class="talk-track-label">🎯 Scenario: "We use Claude Code with dbt Core — we don't need dbt Cloud"</div>
+        <div class="talk-track-toggle">▼</div>
+      </div>
+      <div class="talk-track-body">
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;"><strong style="color:var(--text-primary);">Context:</strong> Prospect has built a DIY stack and believes it replaces dbt Cloud. Engineer-led conversation.</p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;"><strong style="color:var(--text-primary);">Talk Track:</strong></p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">"That's actually a great starting point — and I want to share something most teams don't realize. The official dbt MCP server, which is how Claude integrates with dbt, gives Claude very different capabilities depending on whether you're connected to Core or Cloud. With Core, Claude gets CLI access only — it can run and compile, but it has no visibility into your metadata, lineage, or semantic definitions. With Cloud, Claude gets the Discovery API — it can read your full catalog — plus the Semantic Layer, so it knows your exact metric definitions, and it can manage and inspect your jobs.</p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">So the question isn't 'Claude or dbt Cloud.' The question is: are you getting 20% of Claude's possible dbt capability, or 100%? Right now, you're leaving most of Claude's potential on the table."</p>
+        <p style="font-size:12px; color:var(--text-secondary);"><strong style="color:var(--text-primary);">Then ask:</strong> "Want to pull up the MCP docs together and I'll show you exactly what you'd gain?"</p>
+      </div>
+    </div>
+
+    <div class="talk-track">
+      <div class="talk-track-header" onclick="toggleTrack(this)">
+        <div class="talk-track-label">💰 Scenario: "dbt Core is free — we can't justify the Cloud spend"</div>
+        <div class="talk-track-toggle">▼</div>
+      </div>
+      <div class="talk-track-body">
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;"><strong style="color:var(--text-primary);">Context:</strong> Budget objection, likely from a CFO or FinOps-conscious engineering leader.</p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;"><strong style="color:var(--text-primary);">Talk Track:</strong></p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">"I totally understand — dbt Core is free, which makes it feel like the low-cost option. But let me share what we see with teams that have done the full TCO analysis. Most are spending $50K to $300K per year on orchestration tools like Airflow or Dagster. They're burning 0.5 to 1 FTE on CI/CD maintenance. They spend 2 to 4 weeks of senior engineer time every year on version upgrades. And because they're running full DAG refreshes without state-aware orchestration, they're typically wasting 30% or more on warehouse compute.</p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">None of that goes away by adding Claude. Claude helps you write the code — it doesn't help you run, monitor, or govern it. When we add all that up for a 20-person team, the DIY stack typically costs $800K to $1.5M over three years. dbt Cloud Enterprise comes in at a fraction of that.</p>
+        <p style="font-size:12px; color:var(--text-secondary);"><strong style="color:var(--text-primary);">Then ask:</strong> "Have you ever done a full TCO breakdown including your orchestration, CI/CD, and compute waste? I'd love to do that exercise with you."</p>
+      </div>
+    </div>
+
+    <div class="talk-track">
+      <div class="talk-track-header" onclick="toggleTrack(this)">
+        <div class="talk-track-label">⚡ Scenario: "Our engineers are productive with Claude — change feels risky"</div>
+        <div class="talk-track-toggle">▼</div>
+      </div>
+      <div class="talk-track-body">
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;"><strong style="color:var(--text-primary);">Context:</strong> Resistance from engineering team who has invested in the current workflow.</p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;"><strong style="color:var(--text-primary);">Talk Track:</strong></p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">"That makes complete sense — and I want to be clear: we're not asking you to stop using Claude. We love Claude too. What we're talking about is giving your engineers a much better version of Claude for dbt work — one that knows your full data catalog, understands your metric definitions, can see your lineage graph, and can manage your jobs. That's the Claude experience your engineers get when they're connected to dbt Cloud through the MCP server.</p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">On top of that, you get the studio IDE, CI/CD built in, lineage explorer, and governance — all the stuff your engineers probably wish they had but are manually cobbling together right now.</p>
+        <p style="font-size:12px; color:var(--text-secondary);"><strong style="color:var(--text-primary);">Then ask:</strong> "What would your senior engineer's reaction be if I told them Claude could see their entire DAG and metric definitions, and use that context automatically in every session?"</p>
+      </div>
+    </div>
+
+    <div class="talk-track">
+      <div class="talk-track-header" onclick="toggleTrack(this)">
+        <div class="talk-track-label">🔒 Scenario: Security/compliance team is asking questions about AI</div>
+        <div class="talk-track-toggle">▼</div>
+      </div>
+      <div class="talk-track-body">
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;"><strong style="color:var(--text-primary);">Context:</strong> Infosec or compliance team has raised concerns about AI in the data pipeline.</p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;"><strong style="color:var(--text-primary);">Talk Track:</strong></p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">"This is actually a really important inflection point — and the fact that your security team is already asking means you're ahead of most companies. Right now, every time Claude generates SQL and a developer merges it to production, there's no audit trail. No record of what the AI suggested, what the human approved, or why the change was made. For regulated industries, that's increasingly a compliance problem.</p>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">dbt Cloud's native AI agents — dbt Copilot, the Developer Agent — are purpose-built with auditability in mind. Every AI action is tied to the governed data context that triggered it, traceable through our audit log. RBAC ensures only authorized users can trigger AI actions on sensitive models. This is the answer your compliance team is looking for.</p>
+        <p style="font-size:12px; color:var(--text-secondary);"><strong style="color:var(--text-primary);">Then ask:</strong> "Would it be useful to loop your security team into a conversation with our enterprise team? We have compliance documentation for SOC 2, HIPAA, and ISO 27001."</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🛡️</span> Objection Handling</div>
+
+    <div class="objection">
+      <div class="objection-label">Objection</div>
+      <div class="objection-text">"dbt Copilot is just a worse version of Claude Code."</div>
+      <div class="response-label">Response</div>
+      <div class="response-text">The comparison isn't dbt Copilot vs. Claude Code — it's dbt Cloud's AI (which runs on Claude models with full data context) vs. raw Claude Code with no data context. dbt Copilot and our Agents are Claude-powered — we use Anthropic's models under the hood — but they're grounded in your full metadata graph, Semantic Layer, and lineage. That makes them radically more accurate for data work than a general-purpose Claude instance that's never seen your schema.</div>
+    </div>
+
+    <div class="objection">
+      <div class="objection-label">Objection</div>
+      <div class="objection-text">"We can just write a good system prompt for Claude with our data model."</div>
+      <div class="response-label">Response</div>
+      <div class="response-text">That works — until your data model has 500 models, 200 sources, and 50 metrics. At that point, the system prompt becomes unmanageable, Claude's context window fills up with schema documentation, and it still lacks real-time lineage and column-level dependency awareness. dbt Cloud's MCP integration dynamically retrieves exactly the metadata Claude needs for each task — no static system prompt can replicate that.</div>
+    </div>
+
+    <div class="objection">
+      <div class="objection-label">Objection</div>
+      <div class="objection-text">"We're on Snowflake — we can get dbt Projects for free."</div>
+      <div class="response-label">Response</div>
+      <div class="response-text">Snowflake's dbt Projects is built on dbt Core — not dbt Fusion — and it's Snowflake-only. That means no enterprise capabilities, no dbt Mesh, no Semantic Layer, no column-level lineage, no SSO/RBAC — and zero path to multi-cloud if your strategy evolves. And remember, Snowflake's incentives are fundamentally misaligned with your cost management — they make money when you run more compute. dbt Cloud's cost optimization features actively reduce your Snowflake spend.</div>
+    </div>
+
+    <div class="objection">
+      <div class="objection-label">Objection</div>
+      <div class="objection-text">"Our team is small — we don't need enterprise features yet."</div>
+      <div class="response-label">Response</div>
+      <div class="response-text">That's exactly what Vacasa, Cityblock Health, and Warner Brothers Discovery said — before their monolithic Core project became unsustainable. The debt of a DIY dbt Core setup is non-linear: it's manageable at 100 models and 3 engineers, but it becomes catastrophic at 500 models and 10 engineers. The best time to migrate is before the pain, not after. And with Cloud, you're at production in 10 hours — the earlier you start, the less migration debt you carry.</div>
+    </div>
+
+    <div class="objection">
+      <div class="objection-label">Objection</div>
+      <div class="objection-text">"We already invested in Airflow/Dagster — switching feels too complex."</div>
+      <div class="response-label">Response</div>
+      <div class="response-text">You don't have to replace your orchestrator. For 95% of enterprise data pipelines, the optimal architecture is actually dbt Cloud + a dedicated orchestrator in a hybrid model — dbt Cloud handles the transformation layer, CI/CD, governance, and AI features, while Airflow/Dagster handles broader pipeline orchestration. You keep your existing investment and gain all of Cloud's capabilities on top of it.</div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⏱️</span> Timing Triggers: When to Strike</div>
+    <div class="grid-2">
+      <div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent); margin-bottom:8px;">🔥 High-Urgency Triggers</div>
+        <div style="font-size:12px; color:var(--text-secondary);">
+          <div style="padding:6px 0; border-bottom:1px solid var(--border);">⚡ The engineer who built the dbt Core setup has left or is leaving</div>
+          <div style="padding:6px 0; border-bottom:1px solid var(--border);">⚡ Security team is asking about AI auditability in data pipelines</div>
+          <div style="padding:6px 0; border-bottom:1px solid var(--border);">⚡ Team hit a production incident caused by AI-generated SQL</div>
+          <div style="padding:6px 0; border-bottom:1px solid var(--border);">⚡ New AI initiative requires consistent metric definitions</div>
+          <div style="padding:6px 0;">⚡ Claude rate limits disrupted a critical sprint</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:700; color:var(--blue); margin-bottom:8px;">📅 Medium-Term Triggers</div>
+        <div style="font-size:12px; color:var(--text-secondary);">
+          <div style="padding:6px 0; border-bottom:1px solid var(--border);">📅 Acquisition, merger, or geo expansion (scaling inflection)</div>
+          <div style="padding:6px 0; border-bottom:1px solid var(--border);">📅 New engineering leader hired who needs to evaluate the stack</div>
+          <div style="padding:6px 0; border-bottom:1px solid var(--border);">📅 Annual budget planning cycle opened</div>
+          <div style="padding:6px 0; border-bottom:1px solid var(--border);">📅 Team growing from &lt;5 to 10+ data engineers</div>
+          <div style="padding:6px 0;">📅 BI/analytics tool consolidation initiative underway</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /content -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-text">dbt Labs Internal Battlecard — dbt Core + Claude vs. dbt Cloud/Enterprise | Generated April 2026</div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <div class="footer-badge">Confidential</div>
+    <div class="footer-text">Refresh monthly or before major deals</div>
+  </div>
+</div>
+
+<script>
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function toggleTrack(header) {
+  const track = header.parentElement;
+  track.classList.toggle('open');
+}
+</script>
+
+
+
+</body></html>
